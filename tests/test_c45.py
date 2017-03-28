@@ -1,11 +1,13 @@
+#!/usr/bin/env python
 import unittest
-from c45 import C45
+from c45.c45 import C45
 
 class testC45Methods(unittest.TestCase):
 	c1 = C45("../data/iris/iris.data", "../data/iris/iris.names")
 
 	def testFoo(self):
-		self.assertEqual(True)
+		self.assertEqual(True, True)
+
 
 def main():
 	unittest.main()
