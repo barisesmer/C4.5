@@ -1,0 +1,14 @@
+Sunny,85,85,False,Don't play
+Sunny,80,90,True,Don't play
+Overcast,83,78,False,Play
+Rain,70,96,False,Play
+Rain,68,80,False,Play
+Rain,65,70,True,Don't play
+Overcast,64,65,True,Play
+Sunny,72,95,False,Don't play
+Sunny,69,70,False,Play
+Rain,75,80,False,Play
+Sunny,75,70,True,Play
+Overcast,72,90,True,Play
+Overcast,81,75,False,Play
+Rain,71,80,True,Don't play
