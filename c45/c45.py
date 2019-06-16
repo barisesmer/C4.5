@@ -44,9 +44,9 @@ class C45:
 				#discrete
 				for index,child in enumerate(node.children):
 					if child.isLeaf:
-						print(indent + node.label + " = " + attributes[index] + " : " + child.label)
+						print(indent + node.label + " = " + self.attrValues[node.label][index] + " : " + child.label)
 					else:
-						print(indent + node.label + " = " + attributes[index] + " : ")
+						print(indent + node.label + " = " + self.attrValues[node.label][index] + " : ")
 						self.printNode(child, indent + "	")
 			else:
 				#numerical
@@ -129,10 +129,10 @@ class C45:
 				subsets = [[] for a in valuesForAttribute]
 				for row in curData:
 					for index in range(len(valuesForAttribute)):
-						if row[i] == valuesForAttribute[index]:
+						if row[indexOfAttribute] == valuesForAttribute[index]:
 							subsets[index].append(row)
 							break
-				e = gain(curData, subsets)
+				e = self.gain(curData, subsets)
 				if e > maxEnt:
 					maxEnt = e
 					splitted = subsets

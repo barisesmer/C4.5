@@ -1,0 +1,5 @@
+Play,Don't play
+outlook: Sunny,Overcast,Rain
+temperature: continuous
+humidity: continuous
+windy: True,False
