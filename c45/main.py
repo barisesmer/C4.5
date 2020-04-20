@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-import pdb
 from c45 import C45
+import pandas as pd
 
-c1 = C45("../data/iris/iris.data", "../data/iris/iris.names")
-c1.fetchData()
-c1.preprocessData()
-c1.generateTree()
-c1.printTree()
+data = pd.read_csv("../data/iris/iris.data", header = None)
+c1 = C45(data, [False, False, False, False])
+
+c1.generate_tree()

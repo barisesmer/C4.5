@@ -1,40 +1,67 @@
-import math
+import numpy as np
+from utils import *
 class C45:
 
 	"""Creates a decision tree with C4.5 algorithm"""
-	def __init__(self, pathToData,pathToNames):
-		self.filePathToData = pathToData
-		self.filePathToNames = pathToNames
-		self.data = []
-		self.classes = []
-		self.numAttributes = -1 
-		self.attrValues = {}
-		self.attributes = []
+	def __init__(self, data, is_categorical):
 		self.tree = None
 
-	def fetchData(self):
-		with open(self.filePathToNames, "r") as file:
-			classes = file.readline()
-			self.classes = [x.strip() for x in classes.split(",")]
-			#add attributes
-			for line in file:
-				[attribute, values] = [x.strip() for x in line.split(":")]
-				values = [x.strip() for x in values.split(",")]
-				self.attrValues[attribute] = values
-		self.numAttributes = len(self.attrValues.keys())
-		self.attributes = list(self.attrValues.keys())
-		with open(self.filePathToData, "r") as file:
-			for line in file:
-				row = [x.strip() for x in line.split(",")]
-				if row != [] or row != [""]:
-					self.data.append(row)
+		self.add_data(data, is_categorical)
 
-	def preprocessData(self):
-		for index,row in enumerate(self.data):
-			for attr_index in range(self.numAttributes):
-				if(not self.isAttrDiscrete(self.attributes[attr_index])):
-					self.data[index][attr_index] = float(self.data[index][attr_index])
+	def add_data(self, data, is_categorical):
+		self.data = data
+		self.attrs = data.columns[:-1].to_numpy()
+		self.output_label = data.columns[-1]
+		self.is_categorical = {a[0] : a[1] for a in zip(self.attrs, is_categorical)}
 
+		self.attr_vals = {a : (self.data[a].unique() if self.is_categorical[a] else None) for a in self.attrs}
+
+	def generate_tree(self):
+		self.tree = self.recursive_generate_tree(None, self.data, self.attrs)
+
+	def recursive_generate_tree(self, parent, cur_data, cur_attributes):
+		if len(cur_data) == 0:
+			# no datapoints left, return a leaf node with parents label
+			return Leaf(parent.label)
+		elif len(cur_data[self.output_label].unique()) == 1:
+			# all datapoints belong to the same class, return a leaf node with that label
+			return Leaf(cur_data[self.output_label].unique()[0])
+		elif len(cur_attributes) == 0:
+			# return a leaf node with the majority label
+			return Leaf(cur_data[self.output_label].mode().iloc[0])
+		else:
+			# need to split over an attribute
+			attr, partitions = self.choose_attribute(cur_data, cur_attributes)
+
+			# create a Node
+			node = Node(attr)
+
+			next_attributes = cur_attributes.delete(attr)
+
+			node.children = {attr_val:self.recursive_generate_tree(node, partition, next_attributes) for attr_val,partition in partitions}
+
+			return node
+
+	def choose_attribute(self, cur_data, cur_attributes):
+		attr, d, _ = max( ((attr, *self.split(cur_data, attr)) for attr in cur_attributes), key = lambda x : x[-1])
+
+		return attr, d
+
+	def split(self, cur_data, attribute):
+		if self.is_categorical[attribute]:
+			partitions =  [(attr_val, cur_data[cur_data[attribute] == val]) for attr_val in self.attr_vals[attribute]]
+
+			gain_rt = gain_ratio(cur_data, list(d.values()))
+		else:
+			# sort according to attribute
+			thres_value, S = numerical_best_split(cur_data, attribute)
+
+			partitions = [ (thres_value , S[0]), (thres_value + 0.001, S[1]) ]
+
+			gain_rt = thres_value
+
+		return partitions, gain_rt
+	
 	def printTree(self):
 		self.printNode(self.tree)
 
@@ -66,8 +93,7 @@ class C45:
 
 
 
-	def generateTree(self):
-		self.tree = self.recursiveGenerateTree(self.data, self.attributes)
+
 
 	def recursiveGenerateTree(self, curData, curAttributes):
 		allSame = self.allSameClass(curData)
@@ -196,12 +222,3 @@ class C45:
 			return 0
 		else:
 			return math.log(x,2)
-
-class Node:
-	def __init__(self,isLeaf, label, threshold):
-		self.label = label
-		self.threshold = threshold
-		self.isLeaf = isLeaf
-		self.children = []
-
-
