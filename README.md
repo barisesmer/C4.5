@@ -3,7 +3,7 @@ An implementation of C4.5 machine learning algorithm in python
 
 ## C4.5 Algorithm
 
-C4.5 is an algorithm developed by John Ross Quinlan that creates decision tress. A decision tree is a tool that is 
+C4.5 is an algorithm developed by John Ross Quinlan that creates decision trees. A decision tree is a tool that is 
 used for classification in machine learning, which uses a tree structure where internal nodes represent tests and 
 leaves represent decisions. C4.5 makes use of information theoretic concepts such as entropy to classify the data.
 
